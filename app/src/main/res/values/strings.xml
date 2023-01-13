@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">FoodApp Admin</string>
+    <string name="approve">Duyệt</string>
+    <string name="cancel">Huỷ</string>
+    <string name="awaiting_approval">Đang chờ duyệt</string>
+    <string name="todo">TODO</string>
+    <string name="default_product">Tên sản phẩm</string>
+    <string name="see_details">Xem chi tiết</string>
+    <string name="restaurant_name">Tên nhà hàng</string>
+    <string name="default_version">v1.0.0.0</string>
+    <string name="oops">OOPS!</string>
+    <string name="no_internet_connection">Không có kết nối Internet</string>
+    <string name="please_check_your_connection">Vui lòng kiểm tra kết nối của bạn !!</string>
+    <string name="retry">Thử lại</string>
+    <string name="app_information">Application Information</string>
+    <string name="food_yum_admin">FoodYum Admin</string>
+    <string name="settings">Settings</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="sort">Sắp xếp</string>
+    <string name="user_awaiting_approval">Người dùng đang chờ duyệt</string>
+    <string name="product_awaiting_approval">Sản phẩm đang chờ duyệt</string>
+    <string name="username">Tên người dùng</string>
+</resources>

@@ -1,0 +1,21 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/products_awaiting_approval"
+        android:icon="@drawable/ic_baseline_access_alarm_24"
+        android:title="@string/product_awaiting_approval" />
+    <item
+        android:id="@+id/users_awaiting_approval"
+        android:icon="@drawable/ic_baseline_account_box_24"
+        android:title="@string/user_awaiting_approval" />
+
+    <item android:title="@string/app_information">
+        <menu>
+            <item
+                android:id="@+id/info"
+                android:icon="@drawable/ic_baseline_info_24"
+                android:title="@string/default_version" />
+        </menu>
+    </item>
+
+</menu>
