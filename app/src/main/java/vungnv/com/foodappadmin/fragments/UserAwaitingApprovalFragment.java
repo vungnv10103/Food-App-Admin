@@ -3,6 +3,7 @@ package vungnv.com.foodappadmin.fragments;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -47,7 +48,9 @@ public class UserAwaitingApprovalFragment extends Fragment implements Constant, 
     private RecyclerView rcvListUserAwaiting;
 
     private List<UserMerchantModel> listUser;
-    private ArrayList<UserMerchantModel> aListUser;
+    private ArrayList<UserMerchantModel> aListUserDefault;
+    private final ArrayList<UserMerchantModel> aListUserNotActive = new ArrayList<>();
+    ;
     private UsersMerchantDAO merchantDAO;
     private UserMerchantModel itemUser;
     private UsersAwaitingApprovalAdapter usersAwaitingApprovalAdapter;
@@ -114,52 +117,25 @@ public class UserAwaitingApprovalFragment extends Fragment implements Constant, 
     }
 
     private void listUserFromFB() {
-        aListUser = new ArrayList<>();
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         DatabaseReference databaseReference = firebaseDatabase.getReference("list_user_merchant");
+
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                aListUser.clear();
+                aListUserNotActive.clear();
                 for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                     UserMerchantModel model = snapshot1.getValue(UserMerchantModel.class);
                     assert model != null;
-                    // get account not active
                     if (model.status == 0) {
-                        aListUser.add(model);
+                        aListUserNotActive.add(model);
                     }
-
                 }
-
-                if (aListUser.size() == 0) {
+                if (aListUserNotActive.size() == 0) {
+                    Toast.makeText(getContext(), "Tất cả tài khoản đã được kích hoạt", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
-// add data to db local
-//                listUser = merchantDAO.getALL();
-//                for (int i = listUser.size(); i < aListUser.size(); i++) {
-//                    // Log.d(TAG, "name: " + aListProducts.get(i).name);
-//                    UserMerchantModel item = aListUser.get(i);
-//                    itemUser = new UserMerchantModel();
-//                    itemUser.id = item.id;
-//                    itemUser.status = item.status;
-//                    itemUser.img = item.img;
-//                    itemUser.name = item.name;
-//                    itemUser.email = item.email;
-//                    itemUser.pass = item.pass;
-//                    itemUser.phoneNumber = item.phoneNumber;
-//                    itemUser.restaurantName = item.restaurantName;
-//                    itemUser.address = item.address;
-//                    itemUser.coordinates = item.coordinates;
-//                    itemUser.feedback = item.feedback;
-//                    if (merchantDAO.insert(itemUser) > 0) {
-//                        Log.d(TAG, "update db user_merchant success ");
-//
-//                    }
-//                }
-//                listUser = merchantDAO.getALL();
-                //Toast.makeText(getContext(), ""+ listUser.size(), Toast.LENGTH_SHORT).show();
-                usersAwaitingApprovalAdapter = new UsersAwaitingApprovalAdapter(getContext(), aListUser);
+                usersAwaitingApprovalAdapter = new UsersAwaitingApprovalAdapter(getContext(), aListUserNotActive);
                 rcvListUserAwaiting.setAdapter(usersAwaitingApprovalAdapter);
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
                 rcvListUserAwaiting.setLayoutManager(linearLayoutManager);
@@ -174,6 +150,19 @@ public class UserAwaitingApprovalFragment extends Fragment implements Constant, 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
+            }
+        });
+    }
+
+    private void pushDataAgainToFirebase() {
+        listUser = merchantDAO.getALL();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference reference = database.getReference("list_user_merchant");
+        String key = reference.child("list_user_merchant").push().getKey();
+        reference.setValue(listUser, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                Toast.makeText(getContext(), "RePush Success", Toast.LENGTH_SHORT).show();
             }
         });
     }

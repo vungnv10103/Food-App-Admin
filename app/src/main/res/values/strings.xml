@@ -2,6 +2,7 @@
     <string name="app_name">FoodApp Admin</string>
     <string name="approve">Duyệt</string>
     <string name="cancel">Huỷ</string>
+    <string name="save">Lưu</string>
     <string name="awaiting_approval">Đang chờ duyệt</string>
     <string name="todo">TODO</string>
     <string name="default_product">Tên sản phẩm</string>
@@ -21,4 +22,6 @@
     <string name="user_awaiting_approval">Người dùng đang chờ duyệt</string>
     <string name="product_awaiting_approval">Sản phẩm đang chờ duyệt</string>
     <string name="username">Tên người dùng</string>
+    <string name="confirm">Xác nhận</string>
+    <string name="confirm_delete">Bạn có chắc chắn muốn xoá?</string>
 </resources>

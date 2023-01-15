@@ -63,6 +63,16 @@ public class UsersMerchantDAO {
         values.put("img", obj.img);
         return db.update("UserMerchant", values, "email=?", new String[]{obj.email});
     }
+    public int updateID(UserMerchantModel obj) {
+        ContentValues values = new ContentValues();
+        values.put("id", obj.id);
+        return db.update("UserMerchant", values, "email=?", new String[]{obj.email});
+    }
+    public int updateStatus(UserMerchantModel obj) {
+        ContentValues values = new ContentValues();
+        values.put("status", obj.status);
+        return db.update("UserMerchant", values, "id=?", new String[]{obj.id});
+    }
 
     public int updateFeedBack(UserMerchantModel obj) {
         ContentValues values = new ContentValues();
@@ -121,8 +131,11 @@ public class UsersMerchantDAO {
         return list.get(0).pass;
     }
 
-    public int delete(int id) {
-        return db.delete("UserMerchant", "id=?", new String[]{String.valueOf(id)});
+    public int deleteByEmail(String email) {
+        return db.delete("UserMerchant", "email=?", new String[]{email});
+    }
+    public void deleteTable() {
+        db.execSQL("delete from UserMerchant");
     }
 
 

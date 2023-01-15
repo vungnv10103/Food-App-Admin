@@ -1,5 +1,6 @@
 package vungnv.com.foodappadmin.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -47,12 +48,12 @@ public class UsersAwaitingApprovalAdapter extends RecyclerView.Adapter<UsersAwai
     }
 
     @Override
-    public void onBindViewHolder(@NonNull viewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull viewHolder holder, @SuppressLint("RecyclerView") int position) {
         UserMerchantModel item = list.get(position);
         String idImage = item.img;
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
-        storageRef.child("images/" + idImage).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        storageRef.child("images_users/" + idImage).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 // Got the download URL
@@ -75,6 +76,7 @@ public class UsersAwaitingApprovalAdapter extends RecyclerView.Adapter<UsersAwai
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), ActiveAccountActivity.class);
                 Bundle bundle = new Bundle();
+                bundle.putInt("pos", position);
                 bundle.putString("img", item.img);
                 bundle.putString("name", item.name);
                 bundle.putString("restaurantName", item.restaurantName);
