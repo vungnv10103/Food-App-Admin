@@ -1,13 +1,21 @@
 package vungnv.com.foodappadmin.activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -21,22 +29,34 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import vungnv.com.foodappadmin.R;
 import vungnv.com.foodappadmin.constant.Constant;
+import vungnv.com.foodappadmin.dao.UsersMerchantDAO;
+import vungnv.com.foodappadmin.fragments.UserAwaitingApprovalFragment;
+import vungnv.com.foodappadmin.model.UserMerchantModel;
 
 public class ActiveAccountActivity extends AppCompatActivity implements Constant {
     private EditText edName, edNameRestaurant, edEmail, edPhone, edAddress, edCoordinate;
-    private ImageView img;
+    private ImageView img, imgBack;
     private Button btnSave;
     private TextView tvCancel;
+
+    private UsersMerchantDAO merchantDAO;
+    private UserMerchantModel itemUserMerchant;
+    private ArrayList<UserMerchantModel> aListUserMerchant;
+
 
     private static final SecureRandom random = new SecureRandom();
 
@@ -53,6 +73,7 @@ public class ActiveAccountActivity extends AppCompatActivity implements Constant
         Bundle bundle = intent.getBundleExtra("data-type");
         if (bundle != null) {
             // get data
+
             String img = bundle.getString("img");
             setImg(img);
             String name = bundle.getString("name");
@@ -70,9 +91,17 @@ public class ActiveAccountActivity extends AppCompatActivity implements Constant
             edAddress.setText(address);
             edCoordinate.setText(coordinate);
         }
+        imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                assert bundle != null;
+                int posChild = bundle.getInt("pos");
                 // active account and save in firebase auth
                 String phone = edPhone.getText().toString().trim();
                 String email = edEmail.getText().toString().trim();
@@ -80,30 +109,65 @@ public class ActiveAccountActivity extends AppCompatActivity implements Constant
                     if (checkPhoneNumber(phone)) {
                         FirebaseAuth auth = FirebaseAuth.getInstance();
                         String pass = generatePassword();
-                        auth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(ActiveAccountActivity.this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(ActiveAccountActivity.this, "Đăng kí thành  công !", Toast.LENGTH_SHORT).show();
-                                }
+                        auth.createUserWithEmailAndPassword(email, pass)
+                                .addOnCompleteListener(ActiveAccountActivity.this, new OnCompleteListener<AuthResult>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<AuthResult> task) {
+                                        if (task.isSuccessful()) {
+                                            Log.d(TAG, "info account: (email,pass)" + "(" + email + "," + pass + ")");
+                                            DatabaseReference ref = FirebaseDatabase.getInstance()
+                                                    .getReference().child("list_user_merchant")
+                                                    .child(String.valueOf(posChild)).child("status");
+                                            ref.setValue(1).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void unused) {
+                                                    Toast.makeText(ActiveAccountActivity.this, ACTIVE_ACC_SUCCESS, Toast.LENGTH_SHORT).show();
+                                                    onBackPressed();
+                                                }
+                                            });
+                                        } else {
+                                            Toast.makeText(ActiveAccountActivity.this, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
+                                        }
 
-                            }
-                        });
+                                    }
+                                });
                     }
                 }
 
             }
         });
+
         tvCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onBackPressed();
+
+                Dialog dialog = new Dialog(ActiveAccountActivity.this);
+                dialog.setContentView(R.layout.dialog_confirm_delete);
+                dialog.setCancelable(false);
+                Button btnCancel, btnConfirm;
+
+                btnCancel = dialog.findViewById(R.id.btnCancel);
+                btnConfirm = dialog.findViewById(R.id.btnConfirm);
+                btnConfirm.setOnClickListener(v1 -> {
+                    //  remove item
+
+                });
+                btnCancel.setOnClickListener(v12 -> dialog.dismiss());
+                WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+                lp.copyFrom(dialog.getWindow().getAttributes());
+                lp.width = WindowManager.LayoutParams.WRAP_CONTENT;
+                lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog.getWindow().setAttributes(lp);
+                dialog.show();
             }
         });
     }
 
     private void init() {
+        merchantDAO = new UsersMerchantDAO(getApplicationContext());
         img = findViewById(R.id.imgMerchant);
+        imgBack = findViewById(R.id.imgBack);
         edName = findViewById(R.id.edNameMerchant);
         edNameRestaurant = findViewById(R.id.edRestaurantName);
         edEmail = findViewById(R.id.edEmail);
@@ -118,7 +182,7 @@ public class ActiveAccountActivity extends AppCompatActivity implements Constant
     private void setImg(String idImage) {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
-        storageRef.child("images/" + idImage).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        storageRef.child("images_users/" + idImage).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 // Got the download URL

@@ -12,8 +12,14 @@ public interface Constant {
    int REQUEST_CODE = 100;
    int SELECT_PICTURE = 10;
    String ORDER = "Đơn hàng";
+   String CANCEL = "Huỷ";
+   String CONFIRM = "Xác nhận";
+   String WARNING = "Cảnh báo";
+   String DELETED = "Đã xoá";
+   String MESSAGE_DIALOG = "Bạn có chắc chắn muốn xoá ?";
    String AWAITING_APPROVAL = "Đang chờ duyệt";
    String Manager_Infor = "Thông tin người quản lý";
+   String ACTIVE_ACC_SUCCESS = "Kích hoạt tài khoản thành công !!";
    String DB_USER = "User.db";
    String DB_USER_MERCHANT = "UserMerchant.db";
    String DB_Item_Cart = "ItemCart.db";
