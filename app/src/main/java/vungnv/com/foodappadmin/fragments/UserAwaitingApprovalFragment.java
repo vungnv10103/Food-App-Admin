@@ -99,26 +99,10 @@ public class UserAwaitingApprovalFragment extends Fragment implements Constant, 
         merchantDAO = new UsersMerchantDAO(getContext());
     }
 
-    private void listUser() {
-        listUser = merchantDAO.getALL();
-        //Toast.makeText(getContext(), ""+ listProducts.size(), Toast.LENGTH_SHORT).show();
-        if (listUser.size() == 0) {
-            return;
-        }
-        usersAwaitingApprovalAdapter = new UsersAwaitingApprovalAdapter(getContext(), listUser);
-        rcvListUserAwaiting.setAdapter(usersAwaitingApprovalAdapter);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
-        rcvListUserAwaiting.setLayoutManager(linearLayoutManager);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rcvListUserAwaiting.getContext(),
-                linearLayoutManager.getOrientation());
-        rcvListUserAwaiting.addItemDecoration(dividerItemDecoration);
-        rcvListUserAwaiting.setHasFixedSize(true);
-        rcvListUserAwaiting.setNestedScrollingEnabled(false);
-    }
 
     private void listUserFromFB() {
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference databaseReference = firebaseDatabase.getReference("list_user_merchant");
+        DatabaseReference databaseReference = firebaseDatabase.getReference("list_user_merchant_default");
 
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -135,6 +119,7 @@ public class UserAwaitingApprovalFragment extends Fragment implements Constant, 
                     Toast.makeText(getContext(), "Tất cả tài khoản đã được kích hoạt", Toast.LENGTH_SHORT).show();
                     return;
                 }
+
                 usersAwaitingApprovalAdapter = new UsersAwaitingApprovalAdapter(getContext(), aListUserNotActive);
                 rcvListUserAwaiting.setAdapter(usersAwaitingApprovalAdapter);
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
@@ -154,18 +139,6 @@ public class UserAwaitingApprovalFragment extends Fragment implements Constant, 
         });
     }
 
-    private void pushDataAgainToFirebase() {
-        listUser = merchantDAO.getALL();
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference reference = database.getReference("list_user_merchant");
-        String key = reference.child("list_user_merchant").push().getKey();
-        reference.setValue(listUser, new DatabaseReference.CompletionListener() {
-            @Override
-            public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
-                Toast.makeText(getContext(), "RePush Success", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
 
     @Override
     public void onRefresh() {

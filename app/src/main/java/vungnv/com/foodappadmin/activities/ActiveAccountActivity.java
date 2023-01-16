@@ -37,6 +37,10 @@ import com.google.firebase.storage.StorageReference;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,6 +50,7 @@ import vungnv.com.foodappadmin.constant.Constant;
 import vungnv.com.foodappadmin.dao.UsersMerchantDAO;
 import vungnv.com.foodappadmin.fragments.UserAwaitingApprovalFragment;
 import vungnv.com.foodappadmin.model.UserMerchantModel;
+import vungnv.com.foodappadmin.utils.EncryptingPassword;
 
 public class ActiveAccountActivity extends AppCompatActivity implements Constant {
     private EditText edName, edNameRestaurant, edEmail, edPhone, edAddress, edCoordinate;
@@ -57,6 +62,7 @@ public class ActiveAccountActivity extends AppCompatActivity implements Constant
     private UserMerchantModel itemUserMerchant;
     private ArrayList<UserMerchantModel> aListUserMerchant;
 
+    private final EncryptingPassword encryptingPassword = new EncryptingPassword();
 
     private static final SecureRandom random = new SecureRandom();
 
@@ -107,20 +113,27 @@ public class ActiveAccountActivity extends AppCompatActivity implements Constant
                 String email = edEmail.getText().toString().trim();
                 if (checkEmail(email)) {
                     if (checkPhoneNumber(phone)) {
-                        FirebaseAuth auth = FirebaseAuth.getInstance();
+                        int index = email.indexOf("@");
+                        String userName = email.substring(0, index);
+                        String domain = "@merchant.com";
+                        String newEmail = userName + domain;
                         String pass = generatePassword();
-                        auth.createUserWithEmailAndPassword(email, pass)
+                        String newPass = shuffledPassword(pass);
+                        FirebaseAuth auth = FirebaseAuth.getInstance();
+                        auth.createUserWithEmailAndPassword(newEmail, newPass)
                                 .addOnCompleteListener(ActiveAccountActivity.this, new OnCompleteListener<AuthResult>() {
                                     @Override
                                     public void onComplete(@NonNull Task<AuthResult> task) {
                                         if (task.isSuccessful()) {
-                                            Log.d(TAG, "info account: (email,pass)" + "(" + email + "," + pass + ")");
+                                            Log.d(TAG, "info account: (email,pass)" + "(" + newEmail + "," + newPass + ")");
                                             DatabaseReference ref = FirebaseDatabase.getInstance()
-                                                    .getReference().child("list_user_merchant")
+                                                    .getReference().child("list_user_merchant_default")
                                                     .child(String.valueOf(posChild)).child("status");
                                             ref.setValue(1).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                 @Override
                                                 public void onSuccess(Void unused) {
+
+                                                    upLoadUser(auth.getUid(), newEmail, newPass);
                                                     Toast.makeText(ActiveAccountActivity.this, ACTIVE_ACC_SUCCESS, Toast.LENGTH_SHORT).show();
                                                     onBackPressed();
                                                 }
@@ -240,5 +253,34 @@ public class ActiveAccountActivity extends AppCompatActivity implements Constant
             password.append(SPECIAL_CHARS.charAt(randomIndex));
         }
         return password.toString();
+    }
+
+    private String shuffledPassword(String oldPass) {
+        List<Character> characters = new ArrayList<>();
+        for (char c : oldPass.toCharArray()) {
+            characters.add(c);
+        }
+        Collections.shuffle(characters);
+        StringBuilder shuffledPassword = new StringBuilder();
+        for (char c : characters) {
+            shuffledPassword.append(c);
+        }
+        return shuffledPassword.toString();
+    }
+
+    private void upLoadUser(String id, String email, String pass) {
+        String encryptPass = encryptingPassword.EncryptPassword(pass);
+        UserMerchantModel user = new UserMerchantModel(email, encryptPass);
+        Map<String, Object> mListUser = user.toMap();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference reference = database.getReference();
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("list_user_merchant/" + id, mListUser);
+        reference.updateChildren(updates, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                Log.d(TAG, "upload user to firebase success: ");
+            }
+        });
     }
 }
