@@ -4,7 +4,7 @@ public interface Constant {
    String FIREBASE_URL = "https://food-app-2fb04-default-rtdb.firebaseio.com/";
    String LOWERCASE_CHARS = "abcdefghijklmnopqrstuvwxyz";
    String UPPERCASE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-   String SPECIAL_CHARS = "!@#%^&*";
+   String SPECIAL_CHARS = "!@#%^&";
    String UPDATE_DATA = "Tải mới thành công !!";
    String NOTIFICATION = "FoodYum Admin";
    String MESSAGE = "Chúc bạn ngày mới vui vẻ";

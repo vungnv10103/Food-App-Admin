@@ -1,5 +1,7 @@
 package vungnv.com.foodappadmin.model;
 
+import java.util.HashMap;
+
 public class UserMerchantModel {
     public int stt;
     public String id;
@@ -28,6 +30,17 @@ public class UserMerchantModel {
         this.coordinates = coordinates;
         this.address = address;
         this.feedback = feedback;
+    }
+
+    public UserMerchantModel(String email, String pass) {
+        this.email = email;
+        this.pass = pass;
+    }
+    public HashMap<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("email", email);
+        result.put("pass", pass);
+        return result;
     }
 
     public UserMerchantModel() {
