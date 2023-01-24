@@ -24,4 +24,7 @@
     <string name="username">Tên người dùng</string>
     <string name="confirm">Xác nhận</string>
     <string name="confirm_delete">Bạn có chắc chắn muốn xoá?</string>
+    <string name="please_wait">Xin chờ</string>
+    <string name="default_price">30000</string>
+    <string name="vnd">VNĐ</string>
 </resources>

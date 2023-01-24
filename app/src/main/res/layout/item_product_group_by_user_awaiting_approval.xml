@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/imgProduct"
+            android:id="@+id/imgMerchant"
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:contentDescription="@string/todo"
@@ -27,27 +27,27 @@
     </androidx.cardview.widget.CardView>
 
     <TextView
-        android:id="@+id/tvNameProduct"
+        android:id="@+id/tvNameMerchant"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="@string/default_product"
+        android:text="@string/username"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/card_view_product"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tvPrice"
+        android:id="@+id/tvRestaurantMerchant"
         android:layout_width="230dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="10dp"
-        android:text="@string/default_price"
+        android:text="@string/restaurant_name"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/card_view_product"
-        app:layout_constraintTop_toBottomOf="@+id/tvNameProduct" />
+        app:layout_constraintTop_toBottomOf="@+id/tvNameMerchant" />
 
     <Button
         android:id="@+id/btnSeeDetail"

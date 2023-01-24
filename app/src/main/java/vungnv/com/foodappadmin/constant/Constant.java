@@ -42,6 +42,7 @@ public interface Constant {
    String ERROR_CAM = "Lỗi mở camera !!";
    String TAG = "log";
    String UPDATE_IMAGE = "Cập nhật ảnh thành công";
+   String REGISTER_SUCCESS = "Đăng ký thành công !!";
 
 
 

@@ -2,6 +2,7 @@ package vungnv.com.foodappadmin.fragments;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -17,26 +18,42 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import vungnv.com.foodappadmin.MainActivity;
 import vungnv.com.foodappadmin.R;
 import vungnv.com.foodappadmin.adapter.ProductsAwaitingApprovalAdapter;
+import vungnv.com.foodappadmin.adapter.ProductsAwaitingGroupByUserApprovalAdapter;
+import vungnv.com.foodappadmin.adapter.UsersAwaitingApprovalAdapter;
 import vungnv.com.foodappadmin.constant.Constant;
 import vungnv.com.foodappadmin.dao.ProductDAO;
+import vungnv.com.foodappadmin.dao.UsersMerchantDAO;
 import vungnv.com.foodappadmin.model.ProductDetailModel;
+import vungnv.com.foodappadmin.model.UserMerchantModel;
 
 public class ProductAwaitingApprovalFragment extends Fragment implements Constant, SwipeRefreshLayout.OnRefreshListener {
     private SwipeRefreshLayout swipeRefreshLayout;
     private Toolbar toolbar;
     private ImageView imgBack;
     private Button btnFilter;
-    private RecyclerView rcvListProductAwaiting;
+    private RecyclerView rcvListUserMerchant;
 
     private ProductDAO productDAO;
     private ProductsAwaitingApprovalAdapter productsAwaitingApprovalAdapter;
     private List<ProductDetailModel> listProducts;
+
+    private UsersMerchantDAO merchantDAO;
+    private ProductsAwaitingGroupByUserApprovalAdapter usersAwaitingApprovalAdapter;
+    private List<UserMerchantModel> listUserMerchant;
+    private ArrayList<UserMerchantModel> aListUserMerchant;
 
 
     public ProductAwaitingApprovalFragment() {
@@ -68,8 +85,8 @@ public class ProductAwaitingApprovalFragment extends Fragment implements Constan
                 Toast.makeText(getContext(), "Updating...", Toast.LENGTH_SHORT).show();
             }
         });
+        listUserMerchant();
 
-        listProduct();
         return view;
     }
 
@@ -77,25 +94,52 @@ public class ProductAwaitingApprovalFragment extends Fragment implements Constan
         swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_list_product);
         swipeRefreshLayout.setOnRefreshListener(this);
         btnFilter = view.findViewById(R.id.btnFilter);
-        rcvListProductAwaiting = view.findViewById(R.id.rcvListProductAwaiting);
+        rcvListUserMerchant = view.findViewById(R.id.rcvListUserMerchant);
         productDAO = new ProductDAO(getContext());
+        merchantDAO = new UsersMerchantDAO(getContext());
     }
 
-    private void listProduct() {
-        listProducts = productDAO.getALLDefault();
-        //Toast.makeText(getContext(), ""+ listProducts.size(), Toast.LENGTH_SHORT).show();
-        if (listProducts.size() == 0) {
-            return;
-        }
-        productsAwaitingApprovalAdapter = new ProductsAwaitingApprovalAdapter(getContext(), listProducts);
-        rcvListProductAwaiting.setAdapter(productsAwaitingApprovalAdapter);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
-        rcvListProductAwaiting.setLayoutManager(linearLayoutManager);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rcvListProductAwaiting.getContext(),
-                linearLayoutManager.getOrientation());
-        rcvListProductAwaiting.addItemDecoration(dividerItemDecoration);
-        rcvListProductAwaiting.setHasFixedSize(true);
-        rcvListProductAwaiting.setNestedScrollingEnabled(false);
+    private void listUserMerchant() {
+        aListUserMerchant = new ArrayList<>();
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReference = firebaseDatabase.getReference("list_user_merchant");
+
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                aListUserMerchant.clear();
+                for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                    UserMerchantModel model = snapshot1.getValue(UserMerchantModel.class);
+                    if (model == null) {
+                        return;
+                    }
+
+                    aListUserMerchant.add(model);
+
+                }
+
+                if (aListUserMerchant.size() == 0) {
+                    Toast.makeText(getContext(), "Không tìm thấy bất kỳ tài khoản nào !!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                usersAwaitingApprovalAdapter = new ProductsAwaitingGroupByUserApprovalAdapter(getContext(), aListUserMerchant);
+                rcvListUserMerchant.setAdapter(usersAwaitingApprovalAdapter);
+                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
+                rcvListUserMerchant.setLayoutManager(linearLayoutManager);
+                DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rcvListUserMerchant.getContext(),
+                        linearLayoutManager.getOrientation());
+                rcvListUserMerchant.addItemDecoration(dividerItemDecoration);
+                rcvListUserMerchant.setHasFixedSize(true);
+                rcvListUserMerchant.setNestedScrollingEnabled(false);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     @Override
@@ -106,7 +150,6 @@ public class ProductAwaitingApprovalFragment extends Fragment implements Constan
             public void run() {
                 swipeRefreshLayout.setRefreshing(false);
                 // load data
-                listProduct();
 
             }
         }, 1500);
