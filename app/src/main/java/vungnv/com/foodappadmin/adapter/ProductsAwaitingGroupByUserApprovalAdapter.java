@@ -1,6 +1,5 @@
 package vungnv.com.foodappadmin.adapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -12,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,17 +25,20 @@ import com.google.firebase.storage.StorageReference;
 import java.util.List;
 
 import vungnv.com.foodappadmin.R;
+import vungnv.com.foodappadmin.activities.ActiveAccountActivity;
 import vungnv.com.foodappadmin.activities.ActiveProductActivity;
+import vungnv.com.foodappadmin.activities.ListProductOfUserMerchantActivity;
 import vungnv.com.foodappadmin.constant.Constant;
 import vungnv.com.foodappadmin.dao.ProductDAO;
-import vungnv.com.foodappadmin.model.ProductModel;
+import vungnv.com.foodappadmin.model.ProductDetailModel;
+import vungnv.com.foodappadmin.model.UserMerchantModel;
 
-public class ProductsAwaitingApprovalAdapter extends RecyclerView.Adapter<ProductsAwaitingApprovalAdapter.viewHolder> implements Constant {
+public class ProductsAwaitingGroupByUserApprovalAdapter extends RecyclerView.Adapter<ProductsAwaitingGroupByUserApprovalAdapter.viewHolder> implements Constant {
     private Context context;
-    private List<ProductModel> list;
+    private List<UserMerchantModel> list;
+    private ProductDAO productDAO;
 
-
-    public ProductsAwaitingApprovalAdapter(Context context, List<ProductModel> list) {
+    public ProductsAwaitingGroupByUserApprovalAdapter(Context context, List<UserMerchantModel> list) {
         this.context = context;
         this.list = list;
     }
@@ -43,18 +46,18 @@ public class ProductsAwaitingApprovalAdapter extends RecyclerView.Adapter<Produc
     @NonNull
     @Override
     public viewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_product_awaiting_approval, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_product_group_by_user_awaiting_approval, parent, false);
         return new viewHolder(view);
     }
 
-    @SuppressLint("SetTextI18n")
     @Override
-    public void onBindViewHolder(@NonNull viewHolder holder, @SuppressLint("RecyclerView") int position) {
-        ProductModel item = list.get(position);
+    public void onBindViewHolder(@NonNull viewHolder holder, int position) {
+        productDAO = new ProductDAO(context);
+        UserMerchantModel item = list.get(position);
         String idImage = item.img;
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
-        storageRef.child("images_product/" + idImage).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        storageRef.child("images_users/" + idImage).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 // Got the download URL
@@ -70,22 +73,14 @@ public class ProductsAwaitingApprovalAdapter extends RecyclerView.Adapter<Produc
                 Log.d(TAG, "get image from firebase: " + exception.getMessage());
             }
         });
-        holder.tvTitle.setText(item.name);
-        holder.tvPrice.setText(item.price + " VNĐ");
+        holder.tvName.setText(item.name);
+        holder.tvNameRestaurant.setText(item.restaurantName);
         holder.btnSeeDetail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), ActiveProductActivity.class);
+                Intent intent = new Intent(v.getContext(), ListProductOfUserMerchantActivity.class);
                 Bundle bundle = new Bundle();
-                bundle.putInt("pos", position);
-                bundle.putString("idUser", item.idUser);
-                bundle.putString("address", item.address);
-                bundle.putString("img", item.img);
-                bundle.putString("name", item.name);
-                bundle.putString("type", item.type);
-                bundle.putDouble("price", item.price);
-                bundle.putString("timeDelay", item.timeDelay);
-                bundle.putString("description", item.description);
+                bundle.putString("id", item.id);
                 intent.putExtra("data-type", bundle);
                 v.getContext().startActivity(intent);
             }
@@ -99,15 +94,15 @@ public class ProductsAwaitingApprovalAdapter extends RecyclerView.Adapter<Produc
     }
 
     public static class viewHolder extends RecyclerView.ViewHolder {
-        TextView tvTitle, tvPrice;
-        ImageView img;
-        Button btnSeeDetail;
+        private TextView tvName, tvNameRestaurant;
+        private ImageView img;
+        private Button btnSeeDetail;
 
         public viewHolder(@NonNull View itemView) {
             super(itemView);
-            img = itemView.findViewById(R.id.imgProduct);
-            tvTitle = itemView.findViewById(R.id.tvNameProduct);
-            tvPrice = itemView.findViewById(R.id.tvPrice);
+            img = itemView.findViewById(R.id.imgMerchant);
+            tvName = itemView.findViewById(R.id.tvNameMerchant);
+            tvNameRestaurant = itemView.findViewById(R.id.tvRestaurantMerchant);
             btnSeeDetail = itemView.findViewById(R.id.btnSeeDetail);
 
         }

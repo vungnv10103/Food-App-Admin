@@ -16,6 +16,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FoodAppAdmin"
         tools:targetApi="31">
+        <activity
+            android:name=".activities.ListProductOfUserMerchantActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+
         <service
             android:name=".fcm.MyFirebaseMessagingService"
             android:exported="false">
@@ -23,6 +31,14 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <activity
+            android:name=".activities.ActiveProductActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
         <activity
             android:name=".activities.ActiveAccountActivity"
             android:exported="false">

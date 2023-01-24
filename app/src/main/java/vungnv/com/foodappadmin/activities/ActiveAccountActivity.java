@@ -282,6 +282,7 @@ public class ActiveAccountActivity extends AppCompatActivity implements Constant
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference reference = database.getReference();
         Map<String, Object> updates = new HashMap<>();
+
         updates.put("list_user_merchant/" + id, mListUser);
         reference.updateChildren(updates, new DatabaseReference.CompletionListener() {
             @Override
