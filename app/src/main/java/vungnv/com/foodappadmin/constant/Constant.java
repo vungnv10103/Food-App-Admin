@@ -7,6 +7,7 @@ public interface Constant {
    String SPECIAL_CHARS = "!@#%^&";
    String UPDATE_DATA = "Tải mới thành công !!";
    String NOTIFICATION = "FoodYum Admin";
+   String CHANNEL_ID = "my_channel_id";
    String MESSAGE = "Chúc bạn ngày mới vui vẻ";
    String CATEGORY_LIST = "danh sách thể loại";
    int REQUEST_CODE = 100;

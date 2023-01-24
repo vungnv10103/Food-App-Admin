@@ -50,7 +50,6 @@ public class UserAwaitingApprovalFragment extends Fragment implements Constant, 
     private List<UserMerchantModel> listUser;
     private ArrayList<UserMerchantModel> aListUserDefault;
     private final ArrayList<UserMerchantModel> aListUserNotActive = new ArrayList<>();
-    ;
     private UsersMerchantDAO merchantDAO;
     private UserMerchantModel itemUser;
     private UsersAwaitingApprovalAdapter usersAwaitingApprovalAdapter;
@@ -110,11 +109,15 @@ public class UserAwaitingApprovalFragment extends Fragment implements Constant, 
                 aListUserNotActive.clear();
                 for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                     UserMerchantModel model = snapshot1.getValue(UserMerchantModel.class);
-                    assert model != null;
+                    if (model == null){
+                        return;
+                    }
                     if (model.status == 0) {
+                        //vungnv.com.foodappadmin.utils.createNotification.mCreateNotification(getContext(), "Thông báo", "Duyệt người dùng");
                         aListUserNotActive.add(model);
                     }
                 }
+
                 if (aListUserNotActive.size() == 0) {
                     Toast.makeText(getContext(), "Tất cả tài khoản đã được kích hoạt", Toast.LENGTH_SHORT).show();
                     return;

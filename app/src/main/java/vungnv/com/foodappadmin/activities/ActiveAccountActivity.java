@@ -2,18 +2,17 @@ package vungnv.com.foodappadmin.activities;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -48,9 +47,9 @@ import java.util.regex.Pattern;
 import vungnv.com.foodappadmin.R;
 import vungnv.com.foodappadmin.constant.Constant;
 import vungnv.com.foodappadmin.dao.UsersMerchantDAO;
-import vungnv.com.foodappadmin.fragments.UserAwaitingApprovalFragment;
 import vungnv.com.foodappadmin.model.UserMerchantModel;
 import vungnv.com.foodappadmin.utils.EncryptingPassword;
+import vungnv.com.foodappadmin.utils.NetworkChangeListener;
 
 public class ActiveAccountActivity extends AppCompatActivity implements Constant {
     private EditText edName, edNameRestaurant, edEmail, edPhone, edAddress, edCoordinate;
@@ -63,6 +62,7 @@ public class ActiveAccountActivity extends AppCompatActivity implements Constant
     private ArrayList<UserMerchantModel> aListUserMerchant;
 
     private final EncryptingPassword encryptingPassword = new EncryptingPassword();
+    private final NetworkChangeListener networkChangeListener = new NetworkChangeListener();
 
     private static final SecureRandom random = new SecureRandom();
 
@@ -107,7 +107,6 @@ public class ActiveAccountActivity extends AppCompatActivity implements Constant
             @Override
             public void onClick(View v) {
                 assert bundle != null;
-                int posChild = bundle.getInt("pos");
                 // active account and save in firebase auth
                 String phone = edPhone.getText().toString().trim();
                 String email = edEmail.getText().toString().trim();
@@ -119,21 +118,29 @@ public class ActiveAccountActivity extends AppCompatActivity implements Constant
                         String newEmail = userName + domain;
                         String pass = generatePassword();
                         String newPass = shuffledPassword(pass);
+                        String imgID = bundle.getString("img");
+                        String name = edName.getText().toString().trim();
+                        String restaurantName = edNameRestaurant.getText().toString().trim();
+                        String phoneNumber = edPhone.getText().toString().trim();
+                        String address = edAddress.getText().toString().trim();
+                        String coordinate = edCoordinate.getText().toString().trim();
                         FirebaseAuth auth = FirebaseAuth.getInstance();
                         auth.createUserWithEmailAndPassword(newEmail, newPass)
                                 .addOnCompleteListener(ActiveAccountActivity.this, new OnCompleteListener<AuthResult>() {
                                     @Override
                                     public void onComplete(@NonNull Task<AuthResult> task) {
                                         if (task.isSuccessful()) {
+
                                             Log.d(TAG, "info account: (email,pass)" + "(" + newEmail + "," + newPass + ")");
+
                                             DatabaseReference ref = FirebaseDatabase.getInstance()
                                                     .getReference().child("list_user_merchant_default")
-                                                    .child(String.valueOf(posChild)).child("status");
+                                                    .child(userName).child("status");
                                             ref.setValue(1).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                 @Override
                                                 public void onSuccess(Void unused) {
-
-                                                    upLoadUser(auth.getUid(), newEmail, newPass);
+                                                    upLoadUser(auth.getUid(), 1, imgID, name, newEmail, newPass, phoneNumber, restaurantName, address, coordinate);
+                                                    updateListUserNoActive(String.valueOf(userName));
                                                     Toast.makeText(ActiveAccountActivity.this, ACTIVE_ACC_SUCCESS, Toast.LENGTH_SHORT).show();
                                                     onBackPressed();
                                                 }
@@ -163,7 +170,7 @@ public class ActiveAccountActivity extends AppCompatActivity implements Constant
                 btnConfirm = dialog.findViewById(R.id.btnConfirm);
                 btnConfirm.setOnClickListener(v1 -> {
                     //  remove item
-
+                    dialog.dismiss();
                 });
                 btnCancel.setOnClickListener(v12 -> dialog.dismiss());
                 WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
@@ -268,9 +275,9 @@ public class ActiveAccountActivity extends AppCompatActivity implements Constant
         return shuffledPassword.toString();
     }
 
-    private void upLoadUser(String id, String email, String pass) {
+    private void upLoadUser(String id, int status, String img, String name, String email, String pass, String phoneNumber, String restaurantName, String address, String coordinate) {
         String encryptPass = encryptingPassword.EncryptPassword(pass);
-        UserMerchantModel user = new UserMerchantModel(email, encryptPass);
+        UserMerchantModel user = new UserMerchantModel(id, status, img, name, email, encryptPass, phoneNumber, restaurantName, address, coordinate);
         Map<String, Object> mListUser = user.toMap();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference reference = database.getReference();
@@ -282,5 +289,35 @@ public class ActiveAccountActivity extends AppCompatActivity implements Constant
                 Log.d(TAG, "upload user to firebase success: ");
             }
         });
+    }
+
+    private void updateListUserNoActive(String userName) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference reference = database.getReference().child("list_user_merchant_default").child(userName);
+        reference.removeValue()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.d(TAG, "Data deleted successfully");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error deleting data", e);
+                    }
+                });
+    }
+    @Override
+    protected void onStart() {
+        IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkChangeListener, intentFilter);
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        unregisterReceiver(networkChangeListener);
+        super.onStop();
     }
 }

@@ -51,7 +51,6 @@ public class UsersAwaitingApprovalAdapter extends RecyclerView.Adapter<UsersAwai
     public void onBindViewHolder(@NonNull viewHolder holder, @SuppressLint("RecyclerView") int position) {
         UserMerchantModel item = list.get(position);
         String idImage = item.img;
-
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
         storageRef.child("images_users/" + idImage).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
