@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -35,7 +36,7 @@ import vungnv.com.foodappadmin.model.ProductModel;
 public class ListProductOfUserMerchantActivity extends AppCompatActivity implements Constant, SwipeRefreshLayout.OnRefreshListener{
     private SwipeRefreshLayout swipeRefreshLayout;
     private Toolbar toolbar;
-    private ImageView imgBack;
+    private ImageButton imgBack;
     private Button btnFilter;
     private RecyclerView rcvListProductOfUserMerchant;
 
@@ -63,6 +64,12 @@ public class ListProductOfUserMerchantActivity extends AppCompatActivity impleme
         swipeRefreshLayout.setColorSchemeColors(
                 getResources().getColor(R.color.red),
                 getResources().getColor(R.color.green));
+        imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         btnFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,6 +81,7 @@ public class ListProductOfUserMerchantActivity extends AppCompatActivity impleme
         swipeRefreshLayout = findViewById(R.id.swipe_refresh_list_product_of_user);
         swipeRefreshLayout.setOnRefreshListener(this);
         btnFilter = findViewById(R.id.btnFilter);
+        imgBack = findViewById(R.id.imageButton);
         rcvListProductOfUserMerchant = findViewById(R.id.rcvListProductOfUserMerchant);
         productDAO = new ProductDAO(getApplicationContext());
         progressDialog = new SpotsDialog(ListProductOfUserMerchantActivity.this, R.style.Custom);
@@ -90,6 +98,10 @@ public class ListProductOfUserMerchantActivity extends AppCompatActivity impleme
                     ProductModel value = childSnapshot1.getValue(ProductModel.class);
                     assert value != null;
                     aListProducts.add(value);
+                }
+                if (aListProducts.size() == 0){
+                    Toast.makeText(ListProductOfUserMerchantActivity.this, NO_PRODUCTS_TO_BROWSE, Toast.LENGTH_SHORT).show();
+                    return;
                 }
 
                 productsAdapter = new ProductsAwaitingApprovalAdapter(ListProductOfUserMerchantActivity.this, aListProducts);

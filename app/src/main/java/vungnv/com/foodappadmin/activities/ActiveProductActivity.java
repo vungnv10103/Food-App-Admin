@@ -148,12 +148,12 @@ public class ActiveProductActivity extends AppCompatActivity implements Constant
                 String desc = edDesc.getText().toString().trim();
 
                 if (temp > 0) {
-                    upLoadProductByUserID(idUser, cate, fileName, name, desc, time, price, 0.0, 0, 0, 2, address, "", 0, 0);
-                    upLoadProductDefault(idUser, cate, fileName, name, desc, time, price, 0.0, 0, 0, 2, address, "", 0, 0);
+                    upLoadProductByUserID(idUser, cate, fileName, name, desc, time, price, address);
+                    upLoadProductDefault(idUser, cate, fileName, name, desc, time, price, address);
                     updateListProductNoActive(idUser, name);
                 } else {
-                    upLoadProductByUserID(idUser, cate, img, name, desc, time, price, 0.0, 0, 0, 2, address, "", 0, 0);
-                    upLoadProductDefault(idUser, cate, img, name, desc, time, price, 0.0, 0, 0, 2, address, "", 0, 0);
+                    upLoadProductByUserID(idUser, cate, img, name, desc, time, price, address);
+                    upLoadProductDefault(idUser, cate, img, name, desc, time, price, address);
                     updateListProductNoActive(idUser, name);
                 }
 
@@ -242,17 +242,15 @@ public class ActiveProductActivity extends AppCompatActivity implements Constant
             }
         });
     }
-
     private void upLoadProductByUserID(String idUser, String type, String img, String name, String description,
-                               String timeDelay, double price, double rate, int favourite, int check, int status,
-                               String coordinate, String feedBack, int quantity_sold, int quantityTotal) {
+                               String timeDelay, double price, String coordinate) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("list_product/" + idUser);
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 long childCount = dataSnapshot.getChildrenCount();
-                ProductModel user = new ProductModel(idUser, type, img, name, description, timeDelay, price,
-                        rate, favourite, check, status, coordinate, feedBack, quantity_sold, quantityTotal);
+                ProductModel user = new ProductModel(idUser, type, img, name, description, timeDelay, price, 0.0,
+                        0.0, 0, 0, 2, coordinate, "", 0, 0);
                 Map<String, Object> mListProduct = user.toMap();
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference reference = database.getReference();
@@ -275,17 +273,15 @@ public class ActiveProductActivity extends AppCompatActivity implements Constant
             }
         });
     }
-
     private void upLoadProductDefault(String idUser, String type, String img, String name, String description,
-                                       String timeDelay, double price, double rate, int favourite, int check, int status,
-                                       String coordinate, String feedBack, int quantity_sold, int quantityTotal) {
+                                       String timeDelay, double price, String coordinate) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("list_product_all");
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 long childCount = dataSnapshot.getChildrenCount();
-                ProductModel user = new ProductModel(idUser, type, img, name, description, timeDelay, price,
-                        rate, favourite, check, status, coordinate, feedBack, quantity_sold, quantityTotal);
+                ProductModel user = new ProductModel(idUser, type, img, name, description, timeDelay, price,0.0,
+                        0.0, 0, 0, 2, coordinate, "", 0, 0);
                 Map<String, Object> mListProduct = user.toMap();
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference reference = database.getReference();
