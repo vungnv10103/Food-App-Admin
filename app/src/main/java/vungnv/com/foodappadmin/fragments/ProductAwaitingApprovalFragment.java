@@ -1,5 +1,6 @@
 package vungnv.com.foodappadmin.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -30,6 +32,7 @@ import java.util.Objects;
 
 import vungnv.com.foodappadmin.MainActivity;
 import vungnv.com.foodappadmin.R;
+import vungnv.com.foodappadmin.activities.ListProductOfUserMerchantActivity;
 import vungnv.com.foodappadmin.adapter.ProductsAwaitingApprovalAdapter;
 import vungnv.com.foodappadmin.adapter.ProductsAwaitingGroupByUserApprovalAdapter;
 import vungnv.com.foodappadmin.adapter.UsersAwaitingApprovalAdapter;
@@ -42,8 +45,9 @@ import vungnv.com.foodappadmin.model.UserMerchantModel;
 public class ProductAwaitingApprovalFragment extends Fragment implements Constant, SwipeRefreshLayout.OnRefreshListener {
     private SwipeRefreshLayout swipeRefreshLayout;
     private Toolbar toolbar;
-    private ImageView imgBack;
+
     private Button btnFilter;
+
     private RecyclerView rcvListUserMerchant;
 
     private ProductDAO productDAO;
@@ -79,6 +83,7 @@ public class ProductAwaitingApprovalFragment extends Fragment implements Constan
         swipeRefreshLayout.setColorSchemeColors(
                 getResources().getColor(R.color.red),
                 getResources().getColor(R.color.green));
+
         btnFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -94,6 +99,7 @@ public class ProductAwaitingApprovalFragment extends Fragment implements Constan
         swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_list_product);
         swipeRefreshLayout.setOnRefreshListener(this);
         btnFilter = view.findViewById(R.id.btnFilter);
+
         rcvListUserMerchant = view.findViewById(R.id.rcvListUserMerchant);
         productDAO = new ProductDAO(getContext());
         merchantDAO = new UsersMerchantDAO(getContext());

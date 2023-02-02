@@ -43,7 +43,7 @@ public interface Constant {
    String TAG = "log";
    String UPDATE_IMAGE = "Cập nhật ảnh thành công";
    String REGISTER_SUCCESS = "Đăng ký thành công !!";
-
+   String NO_PRODUCTS_TO_BROWSE = "Không có sản phẩm cần duyệt !!";
 
 
 }
