@@ -41,19 +41,17 @@ import java.util.Objects;
 import dmax.dialog.SpotsDialog;
 import vungnv.com.foodappadmin.R;
 import vungnv.com.foodappadmin.constant.Constant;
-import vungnv.com.foodappadmin.dao.UsersMerchantDAO;
 import vungnv.com.foodappadmin.model.ProductModel;
 import vungnv.com.foodappadmin.model.UserMerchantModel;
 import vungnv.com.foodappadmin.utils.ImagePicker;
 import vungnv.com.foodappadmin.utils.NetworkChangeListener;
 
 public class ActiveProductActivity extends AppCompatActivity implements Constant {
-    private EditText edName, edCate, edPrice, edTime, edDesc;
+    private EditText edID, edName, edCate, edPrice, edTime, edDesc;
     private ImageView img, imgBack;
     private Button btnSave;
     private TextView tvCancel;
 
-    private UsersMerchantDAO merchantDAO;
     private UserMerchantModel itemUserMerchant;
     private ArrayList<UserMerchantModel> aListUserMerchant;
 
@@ -107,6 +105,7 @@ public class ActiveProductActivity extends AppCompatActivity implements Constant
         if (bundle != null) {
             // get data
 
+            String id = bundle.getString("id");
             int pos = bundle.getInt("pos");
             String address = bundle.getString("address");
 
@@ -121,6 +120,7 @@ public class ActiveProductActivity extends AppCompatActivity implements Constant
 //            Toast.makeText(ActiveProductActivity.this, "coor: " + address, Toast.LENGTH_SHORT).show();
 
             // set data
+            edID.setText(id);
             edName.setText(name);
             edCate.setText(type);
             edPrice.setText(String.valueOf(price));
@@ -138,6 +138,7 @@ public class ActiveProductActivity extends AppCompatActivity implements Constant
             @Override
             public void onClick(View v) {
                 assert bundle != null;
+                String id = edID.getText().toString().trim();
                 String idUser = bundle.getString("idUser");
                 String img = bundle.getString("img");
                 String address = bundle.getString("address");
@@ -148,14 +149,14 @@ public class ActiveProductActivity extends AppCompatActivity implements Constant
                 String desc = edDesc.getText().toString().trim();
 
                 if (temp > 0) {
-                    upLoadProductByUserID(idUser, cate, fileName, name, desc, time, price, address);
-                    upLoadProductDefault(idUser, cate, fileName, name, desc, time, price, address);
-                    updateListProductNoActive(idUser, name);
+                    upLoadProductByUserID(id, idUser, cate, fileName, name, desc, time, price, address);
+                    upLoadProductDefault(id, idUser, cate, fileName, name, desc, time, price, address);
                 } else {
-                    upLoadProductByUserID(idUser, cate, img, name, desc, time, price, address);
-                    upLoadProductDefault(idUser, cate, img, name, desc, time, price, address);
-                    updateListProductNoActive(idUser, name);
+                    upLoadProductByUserID(id, idUser, cate, img, name, desc, time, price, address);
+                    upLoadProductDefault(id, idUser, cate, img, name, desc, time, price, address);
                 }
+                updateListProductNoActive(idUser, name);
+               // updateStatusMerchant(idUser, 1);
 
 
             }
@@ -189,9 +190,9 @@ public class ActiveProductActivity extends AppCompatActivity implements Constant
     }
 
     private void init() {
-        merchantDAO = new UsersMerchantDAO(getApplicationContext());
         img = findViewById(R.id.imgProduct);
-       imgBack = findViewById(R.id.imgBack);
+        imgBack = findViewById(R.id.imgBack);
+        edID = findViewById(R.id.edID);
         edName = findViewById(R.id.edNameProduct);
         edCate = findViewById(R.id.edCategory);
         edPrice = findViewById(R.id.edPrice);
@@ -200,6 +201,18 @@ public class ActiveProductActivity extends AppCompatActivity implements Constant
         btnSave = findViewById(R.id.btnSave);
         tvCancel = findViewById(R.id.tvCancel);
         progressDialog = new SpotsDialog(ActiveProductActivity.this, R.style.Custom);
+    }
+
+    private void updateStatusMerchant(String idUser, int status) {
+        DatabaseReference ref = FirebaseDatabase.getInstance()
+                .getReference().child("list_user_merchant")
+                .child(idUser).child("status");
+        ref.setValue(status).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                Log.d(TAG, "update status  success");
+            }
+        });
     }
 
 
@@ -242,14 +255,15 @@ public class ActiveProductActivity extends AppCompatActivity implements Constant
             }
         });
     }
-    private void upLoadProductByUserID(String idUser, String type, String img, String name, String description,
-                               String timeDelay, double price, String coordinate) {
+
+    private void upLoadProductByUserID(String id, String idUser, String type, String img, String name, String description,
+                                       String timeDelay, double price, String coordinate) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("list_product/" + idUser);
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 long childCount = dataSnapshot.getChildrenCount();
-                ProductModel user = new ProductModel(idUser, type, img, name, description, timeDelay, price, 0.0,
+                ProductModel user = new ProductModel((int) childCount, id, idUser, type, img, name, description, timeDelay, price, 0.0,
                         0.0, 0, 0, 2, coordinate, "", 0, 0);
                 Map<String, Object> mListProduct = user.toMap();
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -273,14 +287,15 @@ public class ActiveProductActivity extends AppCompatActivity implements Constant
             }
         });
     }
-    private void upLoadProductDefault(String idUser, String type, String img, String name, String description,
-                                       String timeDelay, double price, String coordinate) {
+
+    private void upLoadProductDefault(String id, String idUser, String type, String img, String name, String description,
+                                      String timeDelay, double price, String coordinate) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("list_product_all");
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 long childCount = dataSnapshot.getChildrenCount();
-                ProductModel user = new ProductModel(idUser, type, img, name, description, timeDelay, price,0.0,
+                ProductModel user = new ProductModel((int) childCount, id, idUser, type, img, name, description, timeDelay, price, 0.0,
                         0.0, 0, 0, 2, coordinate, "", 0, 0);
                 Map<String, Object> mListProduct = user.toMap();
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -308,6 +323,7 @@ public class ActiveProductActivity extends AppCompatActivity implements Constant
 
     private void clearForm() {
         img.setImageResource(R.drawable.default_thumbnail);
+        edID.setText("");
         edName.setText("");
         edCate.setText("");
         edPrice.setText("");

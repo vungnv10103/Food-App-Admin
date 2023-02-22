@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,18 +24,13 @@ import com.google.firebase.storage.StorageReference;
 import java.util.List;
 
 import vungnv.com.foodappadmin.R;
-import vungnv.com.foodappadmin.activities.ActiveAccountActivity;
-import vungnv.com.foodappadmin.activities.ActiveProductActivity;
 import vungnv.com.foodappadmin.activities.ListProductOfUserMerchantActivity;
 import vungnv.com.foodappadmin.constant.Constant;
-import vungnv.com.foodappadmin.dao.ProductDAO;
-import vungnv.com.foodappadmin.model.ProductDetailModel;
 import vungnv.com.foodappadmin.model.UserMerchantModel;
 
 public class ProductsAwaitingGroupByUserApprovalAdapter extends RecyclerView.Adapter<ProductsAwaitingGroupByUserApprovalAdapter.viewHolder> implements Constant {
-    private Context context;
-    private List<UserMerchantModel> list;
-    private ProductDAO productDAO;
+    private final Context context;
+    private final List<UserMerchantModel> list;
 
     public ProductsAwaitingGroupByUserApprovalAdapter(Context context, List<UserMerchantModel> list) {
         this.context = context;
@@ -52,7 +46,6 @@ public class ProductsAwaitingGroupByUserApprovalAdapter extends RecyclerView.Ada
 
     @Override
     public void onBindViewHolder(@NonNull viewHolder holder, int position) {
-        productDAO = new ProductDAO(context);
         UserMerchantModel item = list.get(position);
         String idImage = item.img;
         FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -94,9 +87,9 @@ public class ProductsAwaitingGroupByUserApprovalAdapter extends RecyclerView.Ada
     }
 
     public static class viewHolder extends RecyclerView.ViewHolder {
-        private TextView tvName, tvNameRestaurant;
-        private ImageView img;
-        private Button btnSeeDetail;
+        TextView tvName, tvNameRestaurant;
+        ImageView img;
+        Button btnSeeDetail;
 
         public viewHolder(@NonNull View itemView) {
             super(itemView);

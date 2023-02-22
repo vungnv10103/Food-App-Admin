@@ -3,7 +3,8 @@ package vungnv.com.foodappadmin.model;
 import java.util.HashMap;
 
 public class ProductModel {
-    public int stt;
+    public int pos;
+    public String id;
     public String idUser;
     public String type;
     public String img;
@@ -24,10 +25,12 @@ public class ProductModel {
     public ProductModel() {
     }
 
-    public ProductModel(String idUser, String type, String img, String name,
+    public ProductModel(int pos, String id, String idUser, String type, String img, String name,
                         String description, String timeDelay, Double price, Double discount,
                         Double rate, int favourite, int check, int status, String address,
                         String feedBack, int quantity_sold, int quantityTotal) {
+        this.pos = pos;
+        this.id = id;
         this.idUser = idUser;
         this.type = type;
         this.img = img;
@@ -47,6 +50,8 @@ public class ProductModel {
     }
     public HashMap<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
+        result.put("pos",pos);
+        result.put("id",id);
         result.put("idUser", idUser);
         result.put("type", type);
         result.put("img", img);

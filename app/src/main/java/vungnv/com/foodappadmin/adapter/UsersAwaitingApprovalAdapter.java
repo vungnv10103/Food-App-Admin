@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,7 +27,6 @@ import java.util.List;
 import vungnv.com.foodappadmin.R;
 import vungnv.com.foodappadmin.activities.ActiveAccountActivity;
 import vungnv.com.foodappadmin.constant.Constant;
-import vungnv.com.foodappadmin.dao.UsersMerchantDAO;
 import vungnv.com.foodappadmin.model.UserMerchantModel;
 
 public class UsersAwaitingApprovalAdapter extends RecyclerView.Adapter<UsersAwaitingApprovalAdapter.viewHolder> implements Constant {

@@ -27,7 +27,6 @@ import java.util.List;
 import vungnv.com.foodappadmin.R;
 import vungnv.com.foodappadmin.activities.ActiveProductActivity;
 import vungnv.com.foodappadmin.constant.Constant;
-import vungnv.com.foodappadmin.dao.ProductDAO;
 import vungnv.com.foodappadmin.model.ProductModel;
 
 public class ProductsAwaitingApprovalAdapter extends RecyclerView.Adapter<ProductsAwaitingApprovalAdapter.viewHolder> implements Constant {
@@ -78,6 +77,7 @@ public class ProductsAwaitingApprovalAdapter extends RecyclerView.Adapter<Produc
                 Intent intent = new Intent(v.getContext(), ActiveProductActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putInt("pos", position);
+                bundle.putString("id", item.id);
                 bundle.putString("idUser", item.idUser);
                 bundle.putString("address", item.address);
                 bundle.putString("img", item.img);

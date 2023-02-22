@@ -1,6 +1,5 @@
 package vungnv.com.foodappadmin.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -16,8 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -32,13 +29,9 @@ import java.util.Objects;
 
 import vungnv.com.foodappadmin.MainActivity;
 import vungnv.com.foodappadmin.R;
-import vungnv.com.foodappadmin.activities.ListProductOfUserMerchantActivity;
 import vungnv.com.foodappadmin.adapter.ProductsAwaitingApprovalAdapter;
 import vungnv.com.foodappadmin.adapter.ProductsAwaitingGroupByUserApprovalAdapter;
-import vungnv.com.foodappadmin.adapter.UsersAwaitingApprovalAdapter;
 import vungnv.com.foodappadmin.constant.Constant;
-import vungnv.com.foodappadmin.dao.ProductDAO;
-import vungnv.com.foodappadmin.dao.UsersMerchantDAO;
 import vungnv.com.foodappadmin.model.ProductDetailModel;
 import vungnv.com.foodappadmin.model.UserMerchantModel;
 
@@ -50,11 +43,9 @@ public class ProductAwaitingApprovalFragment extends Fragment implements Constan
 
     private RecyclerView rcvListUserMerchant;
 
-    private ProductDAO productDAO;
     private ProductsAwaitingApprovalAdapter productsAwaitingApprovalAdapter;
     private List<ProductDetailModel> listProducts;
 
-    private UsersMerchantDAO merchantDAO;
     private ProductsAwaitingGroupByUserApprovalAdapter usersAwaitingApprovalAdapter;
     private List<UserMerchantModel> listUserMerchant;
     private ArrayList<UserMerchantModel> aListUserMerchant;
@@ -99,10 +90,7 @@ public class ProductAwaitingApprovalFragment extends Fragment implements Constan
         swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_list_product);
         swipeRefreshLayout.setOnRefreshListener(this);
         btnFilter = view.findViewById(R.id.btnFilter);
-
         rcvListUserMerchant = view.findViewById(R.id.rcvListUserMerchant);
-        productDAO = new ProductDAO(getContext());
-        merchantDAO = new UsersMerchantDAO(getContext());
     }
 
     private void listUserMerchant() {
@@ -119,9 +107,9 @@ public class ProductAwaitingApprovalFragment extends Fragment implements Constan
                     if (model == null) {
                         return;
                     }
-
-                    aListUserMerchant.add(model);
-
+//                    if (model.status == 2) {
+                        aListUserMerchant.add(model);
+//                    }
                 }
 
                 if (aListUserMerchant.size() == 0) {
