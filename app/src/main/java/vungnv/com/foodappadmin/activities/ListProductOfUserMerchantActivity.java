@@ -15,7 +15,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -30,7 +29,6 @@ import dmax.dialog.SpotsDialog;
 import vungnv.com.foodappadmin.R;
 import vungnv.com.foodappadmin.adapter.ProductsAwaitingApprovalAdapter;
 import vungnv.com.foodappadmin.constant.Constant;
-import vungnv.com.foodappadmin.dao.ProductDAO;
 import vungnv.com.foodappadmin.model.ProductModel;
 
 public class ListProductOfUserMerchantActivity extends AppCompatActivity implements Constant, SwipeRefreshLayout.OnRefreshListener{
@@ -40,7 +38,6 @@ public class ListProductOfUserMerchantActivity extends AppCompatActivity impleme
     private Button btnFilter;
     private RecyclerView rcvListProductOfUserMerchant;
 
-    private ProductDAO productDAO;
     private ArrayList<ProductModel> aListProducts;
     private ProductsAwaitingApprovalAdapter productsAdapter;
 
@@ -83,7 +80,6 @@ public class ListProductOfUserMerchantActivity extends AppCompatActivity impleme
         btnFilter = findViewById(R.id.btnFilter);
         imgBack = findViewById(R.id.imageButton);
         rcvListProductOfUserMerchant = findViewById(R.id.rcvListProductOfUserMerchant);
-        productDAO = new ProductDAO(getApplicationContext());
         progressDialog = new SpotsDialog(ListProductOfUserMerchantActivity.this, R.style.Custom);
     }
 

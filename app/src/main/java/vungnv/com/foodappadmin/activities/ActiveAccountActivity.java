@@ -46,7 +46,6 @@ import java.util.regex.Pattern;
 
 import vungnv.com.foodappadmin.R;
 import vungnv.com.foodappadmin.constant.Constant;
-import vungnv.com.foodappadmin.dao.UsersMerchantDAO;
 import vungnv.com.foodappadmin.model.UserMerchantModel;
 import vungnv.com.foodappadmin.utils.EncryptingPassword;
 import vungnv.com.foodappadmin.utils.NetworkChangeListener;
@@ -57,7 +56,6 @@ public class ActiveAccountActivity extends AppCompatActivity implements Constant
     private Button btnSave;
     private TextView tvCancel;
 
-    private UsersMerchantDAO merchantDAO;
     private UserMerchantModel itemUserMerchant;
     private ArrayList<UserMerchantModel> aListUserMerchant;
 
@@ -185,7 +183,6 @@ public class ActiveAccountActivity extends AppCompatActivity implements Constant
     }
 
     private void init() {
-        merchantDAO = new UsersMerchantDAO(getApplicationContext());
         img = findViewById(R.id.imgMerchant);
         imgBack = findViewById(R.id.imgBack);
         edName = findViewById(R.id.edNameMerchant);

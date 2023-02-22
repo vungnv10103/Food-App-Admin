@@ -3,7 +3,6 @@ package vungnv.com.foodappadmin.fragments;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -12,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,11 +30,8 @@ import java.util.Objects;
 
 import vungnv.com.foodappadmin.MainActivity;
 import vungnv.com.foodappadmin.R;
-import vungnv.com.foodappadmin.adapter.ProductsAwaitingApprovalAdapter;
 import vungnv.com.foodappadmin.adapter.UsersAwaitingApprovalAdapter;
 import vungnv.com.foodappadmin.constant.Constant;
-import vungnv.com.foodappadmin.dao.ProductDAO;
-import vungnv.com.foodappadmin.dao.UsersMerchantDAO;
 import vungnv.com.foodappadmin.model.UserMerchantModel;
 
 public class UserAwaitingApprovalFragment extends Fragment implements Constant, SwipeRefreshLayout.OnRefreshListener {
@@ -50,7 +45,6 @@ public class UserAwaitingApprovalFragment extends Fragment implements Constant, 
     private List<UserMerchantModel> listUser;
     private ArrayList<UserMerchantModel> aListUserDefault;
     private final ArrayList<UserMerchantModel> aListUserNotActive = new ArrayList<>();
-    private UsersMerchantDAO merchantDAO;
     private UserMerchantModel itemUser;
     private UsersAwaitingApprovalAdapter usersAwaitingApprovalAdapter;
 
@@ -95,7 +89,6 @@ public class UserAwaitingApprovalFragment extends Fragment implements Constant, 
         swipeRefreshLayout.setOnRefreshListener(this);
         btnFilter = view.findViewById(R.id.btnFilter);
         rcvListUserAwaiting = view.findViewById(R.id.rcvListUserAwaiting);
-        merchantDAO = new UsersMerchantDAO(getContext());
     }
 
 
