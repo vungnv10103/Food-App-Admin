@@ -321,6 +321,7 @@ public class ActiveProductActivity extends AppCompatActivity implements Constant
     }
 
 
+
     private void clearForm() {
         img.setImageResource(R.drawable.default_thumbnail);
         edID.setText("");
