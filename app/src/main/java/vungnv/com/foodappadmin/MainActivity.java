@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -18,6 +19,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
@@ -53,7 +55,7 @@ import vungnv.com.foodappadmin.model.CategoryModel;
 import vungnv.com.foodappadmin.utils.NetworkChangeListener;
 import vungnv.com.foodappadmin.utils.createNotificationChannel;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Constant{
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Constant {
     private DrawerLayout drawerLayout;
     private Toolbar toolbar;
     private NavigationView navigationView;
@@ -65,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     createNotificationChannel notification = new createNotificationChannel();
 
     private ArrayList<CategoryModel> aListCate;
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         init();
 
         notification.createNotificationChannel(MainActivity.this);
-         //vungnv.com.foodappadmin.utils.createNotification.mCreateNotification(MainActivity.this, "Tiêu đề", "Nội dung");
+        //vungnv.com.foodappadmin.utils.createNotification.mCreateNotification(MainActivity.this, "Tiêu đề", "Nội dung");
 
         toolbar.setTitle(ORDER);
         toolbar.setTitleTextColor(Color.WHITE);
@@ -131,6 +134,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         tvSettings = mHeaderView.findViewById(R.id.tvSettings);
         tvHome = mHeaderView.findViewById(R.id.tvHome);
     }
+
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -150,12 +154,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout.closeDrawer(navigationView);
         return true;
     }
+
     public void replaceFragment(Fragment fra) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frameLayout, fra);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void createNotificationChannel(Context context) {
         // NotificationChannel for Android 8.0 and higher
@@ -190,6 +196,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .setAutoCancel(true);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         notificationManager.notify(0, builder.build());
     }
     private void listProductAwaitingApproval() {

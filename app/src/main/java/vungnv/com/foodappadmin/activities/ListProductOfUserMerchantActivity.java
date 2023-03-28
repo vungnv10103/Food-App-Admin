@@ -97,7 +97,6 @@ public class ListProductOfUserMerchantActivity extends AppCompatActivity impleme
                 }
                 if (aListProducts.size() == 0){
                     Toast.makeText(ListProductOfUserMerchantActivity.this, NO_PRODUCTS_TO_BROWSE, Toast.LENGTH_SHORT).show();
-                    return;
                 }
 
                 productsAdapter = new ProductsAwaitingApprovalAdapter(ListProductOfUserMerchantActivity.this, aListProducts);

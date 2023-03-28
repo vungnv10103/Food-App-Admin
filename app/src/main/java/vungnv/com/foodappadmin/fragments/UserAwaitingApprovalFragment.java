@@ -113,7 +113,6 @@ public class UserAwaitingApprovalFragment extends Fragment implements Constant, 
 
                 if (aListUserNotActive.size() == 0) {
                     Toast.makeText(getContext(), "Tất cả tài khoản đã được kích hoạt", Toast.LENGTH_SHORT).show();
-                    return;
                 }
 
                 usersAwaitingApprovalAdapter = new UsersAwaitingApprovalAdapter(getContext(), aListUserNotActive);

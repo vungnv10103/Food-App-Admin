@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -114,8 +115,8 @@ public class ProductAwaitingApprovalFragment extends Fragment implements Constan
 
                 if (aListUserMerchant.size() == 0) {
                     Toast.makeText(getContext(), "Không tìm thấy bất kỳ tài khoản nào !!", Toast.LENGTH_SHORT).show();
-                    return;
                 }
+                Log.d(TAG, "my data: " + aListUserMerchant);
 
                 usersAwaitingApprovalAdapter = new ProductsAwaitingGroupByUserApprovalAdapter(getContext(), aListUserMerchant);
                 rcvListUserMerchant.setAdapter(usersAwaitingApprovalAdapter);
@@ -124,8 +125,6 @@ public class ProductAwaitingApprovalFragment extends Fragment implements Constan
                 DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rcvListUserMerchant.getContext(),
                         linearLayoutManager.getOrientation());
                 rcvListUserMerchant.addItemDecoration(dividerItemDecoration);
-                rcvListUserMerchant.setHasFixedSize(true);
-                rcvListUserMerchant.setNestedScrollingEnabled(false);
 
             }
 
